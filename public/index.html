@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geo-Fence Livestock</title>
+    <!-- Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        /* Import Google Fonts */
+        @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+        /* Reset default margins and paddings */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Body styling */
+        body {
+            font-family: 'Roboto', sans-serif;
+            height: 100vh;
+            width: 100%;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #f0f0f0; /* Fallback color */
+        }
+
+        /* Background image styling */
+        .background-image {
+            background: url('your_background_image_url_here') no-repeat center center fixed; /* Update this with the actual image URL */
+            background-size: cover;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -2;
+        }
+
+        /* Green overlay to enhance readability */
+        .background-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 128, 0, 0.5); /* Green overlay with 50% opacity */
+            z-index: -1;
+        }
+
+        /* Container for the main content */
+        .container {
+            position: relative;
+            text-align: center;
+            color: #333333; /* Dark grey for better contrast */
+            padding: 40px 20px;
+            max-width: 800px;
+            width: 90%;
+            background: rgba(255, 255, 255, 0.9); /* Slightly transparent white background */
+            border-radius: 15px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        /* Heading styling */
+        h1 {
+            font-size: 3em;
+            margin-bottom: 10px;
+            color: #2e8b57; /* Dark green */
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Subheading styling */
+        h2 {
+            font-size: 1.5em;
+            margin-bottom: 20px;
+            color: #28a745; /* Medium green */
+            font-weight: 400;
+        }
+
+        /* Hindi quote styling */
+        .hindi-quote {
+            font-size: 1.2em;
+            color: #333; /* Dark grey */
+            font-style: italic;
+            margin-bottom: 30px;
+        }
+
+        /* Tagline styling */
+        .tagline {
+            font-size: 1.2em;
+            margin-bottom: 40px;
+            color: #333; /* Dark grey */
+            font-weight: 400;
+        }
+
+        /* Start button styling */
+        .start-btn {
+            background-color: #28a745; /* Medium green */
+            color: white;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .start-btn:hover {
+            background-color: #218838; /* Darker green on hover */
+            transform: translateY(-3px); /* Slight lift effect */
+        }
+
+        .arrow {
+            margin-left: 10px;
+            font-size: 1.5em;
+            transition: margin-left 0.3s ease;
+        }
+
+        .start-btn:hover .arrow {
+            margin-left: 15px; /* Move arrow slightly on hover */
+        }
+
+        /* Fade-in animation for container */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Responsive design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5em;
+            }
+
+            .start-btn {
+                font-size: 1em;
+                padding: 12px 30px;
+            }
+
+            .hindi-quote, .tagline {
+                font-size: 1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-image"></div> <!-- Background image section -->
+    <div class="background-overlay"></div> <!-- Green overlay for better readability -->
+
+    <div class="container">
+        <h1>Geo-Fence Livestock</h1>
+        <h2>Empowering Farmers with Advanced Geofencing Technology</h2>
+        <p class="hindi-quote">गाय का संरक्षण ही किसान की समृद्धि का आधार है।</p> <!-- Hindi quote for farmers -->
+        <p class="tagline">Join us in revolutionizing livestock management for a sustainable future.</p>
+        <a href="signin.html">
+        <button class="start-btn">
+            Let's Get Started 
+            <span class="arrow">→</span>
+        </button>
+        </a>
+    </div>
+
+</body>
+</html>

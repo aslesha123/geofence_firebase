@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Geofencing Demo</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet-draw/dist/leaflet.draw.css"/>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> <!-- Font Awesome for icons -->
+</head>
+<body>
+    <div id="controls">
+        <div id="address-controls">
+            <input type="text" id="address-input" placeholder="Enter address" />
+            <button id="search">Search Address</button>
+        </div>
+    </div>
+    <div id="map"></div>
+    <div id="location-controls">
+        <button id="go-to-location">
+            <i class="fas fa-compass"></i>
+        </button>
+    </div>
+    <div id="coordinates">Polygon Coordinates: None</div>
+    <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet-draw/dist/leaflet.draw.js"></script>
+    <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-app.js";
+        import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-analytics.js";
+        import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/10.13.2/firebase-database.js";
+
+        const firebaseConfig = {
+          apiKey: "AIzaSyA2SzXAH6wcOcTHMkDIs8Z4vfSMlqHRScM",
+          authDomain: "asleshageofence.firebaseapp.com",
+          databaseURL: "https://asleshageofence-default-rtdb.firebaseio.com",
+          projectId: "asleshageofence",
+          storageBucket: "asleshageofence.appspot.com",
+          messagingSenderId: "263318295650",
+          appId: "1:263318295650:web:78b12b2cb5cdcccd3a2d3b",
+          measurementId: "G-GSYGC82DHW"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const analytics = getAnalytics(app);
+        const db = getDatabase(app);
+
+        const currentUserUid = sessionStorage.getItem('userUid');
+        console.log('Current User UID:', currentUserUid);
+
+        // Initialize the map
+        var map = L.map('map').setView([51.505, -0.09], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
+
+        var drawnItems = new L.FeatureGroup();
+        map.addLayer(drawnItems);
+
+        // Function to handle address search
+        function searchAddress() {
+            const address = document.getElementById('address-input').value;
+            const geocoder = L.Control.Geocoder.nominatim();
+
+            geocoder.geocode(address, function(results) {
+                if (results.length > 0) {
+                    const latLng = results[0].center;
+                    map.setView(latLng, 15); // Zoom level 15 for a closer view
+                } else {
+                    alert("Address not found. Please try again.");
+                }
+            });
+        }
+
+        // Function to handle "Go to My Location"
+        function goToMyLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(function(position) {
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    map.setView([lat, lng], 15); // Zoom level 15 for a closer view
+                }, function() {
+                    alert("Unable to retrieve your location. Please check your location settings.");
+                });
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
+
+        // Event listeners for buttons
+        document.getElementById('search-address').addEventListener('click', searchAddress);
+        document.getElementById('go-to-location').addEventListener('click', goToMyLocation);
+
+        // Drawing Control
+        var drawControl = new L.Control.Draw({
+            edit: {
+                featureGroup: drawnItems,
+                remove: true  // Enable removal of layers (polygons)
+            },
+            draw: {
+                polygon: true,  // Allow drawing polygons
+                marker: false,   // Disable marker drawing
+                circle: false,
+                rectangle: false,
+                circlemarker: false,
+                polyline: false
+            }
+        });
+        map.addControl(drawControl);
+
+        var polygonLayer = null;  // Variable to store the polygon
+
+        // Function to fetch and display geofence from Firebase
+        function doesuseralreadyhavegeofence() {
+            if (currentUserUid) {
+                const geofenceRef = ref(db, 'geofences/' + currentUserUid);
+
+                get(geofenceRef).then((snapshot) => {
+                    if (snapshot.exists()) {
+                        const savedCoordinates = snapshot.val().coordinates;
+                        console.log("Retrieved coordinates: ", savedCoordinates);
+
+                        // Draw the polygon on the map
+                        polygonLayer = L.polygon(savedCoordinates).addTo(map);
+                        drawnItems.addLayer(polygonLayer);
+
+                        // Fit the map to the polygon's bounds
+                        const bounds = polygonLayer.getBounds();
+                        map.fitBounds(bounds);
+
+                        // Display coordinates
+                        document.getElementById('coordinates').textContent = "Polygon Coordinates: " + savedCoordinates;
+                    } else {
+                        console.log("No geofence found for this user.");
+                    }
+                }).catch((error) => {
+                    console.error("Error fetching geofence: ", error);
+                });
+            }
+        }
+
+        doesuseralreadyhavegeofence();
+
+        // Function to store geofence in Firebase
+        function saveGeofenceToDatabase(coordinates) {
+            if (currentUserUid) {
+                const geofenceRef = ref(db, 'geofences/' + currentUserUid);
+                set(geofenceRef, {
+                    coordinates: coordinates
+                }).then(() => {
+                    alert('Geofence saved successfully!');
+                }).catch((error) => {
+                    console.error("Error saving geofence: ", error);
+                });
+            } else {
+                alert("User ID is missing. Cannot save geofence.");
+            }
+        }
+
+        // Event for polygon creation
+        map.on('draw:created', function (e) {
+            var type = e.layerType,
+                layer = e.layer;
+
+            if (type === 'polygon') {
+                if (polygonLayer) {
+                    alert("Only one polygon allowed. Delete the existing polygon to draw a new one.");
+                    return;
+                }
+
+                var polygonCoordinates = layer.getLatLngs()[0]; // Get the first ring (outer ring)
+
+                // Ensure the polygon closes by adding the first point as the last point if not already closed
+                if (!polygonCoordinates[0].equals(polygonCoordinates[polygonCoordinates.length - 1])) {
+                    polygonCoordinates.push(polygonCoordinates[0]);
+                }
+
+                var coordinatesText = polygonCoordinates.map(function (coord) {
+                    return [coord.lat, coord.lng];
+                });
+
+                // Display coordinates
+                document.getElementById('coordinates').textContent = "Polygon Coordinates: " + coordinatesText;
+
+                // Store the polygon layer
+                polygonLayer = layer;
+
+                // Save coordinates to Firebase
+                saveGeofenceToDatabase(coordinatesText);
+
+                // Fit the map to the polygon's bounds
+                const bounds = polygonLayer.getBounds();
+                map.fitBounds(bounds);
+            }
+
+            drawnItems.addLayer(layer);
+        });
+
+        // Event for polygon deletion
+        map.on('draw:deleted', function (e) {
+            e.layers.eachLayer(function (layer) {
+                if (layer === polygonLayer) {
+                    polygonLayer = null;
+                    document.getElementById('coordinates').textContent = "Polygon Coordinates: None";
+                }
+            });
+        });
+
+    </script>
+</body>
+</html>

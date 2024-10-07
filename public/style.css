@@ -1,0 +1,60 @@
+/* General body styling */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+    background-color: #c3e2a1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+}
+
+/* Map container styling */
+#map {
+    width: 90vw;
+    height: 80vh;
+    border: 10px solid #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Coordinates display styling */
+#coordinates {
+    width: 90vw;
+    margin-top: 20px;
+    padding: 10px;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 5px;
+    font-size: 1.1em;
+    color: #343a40;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.1);
+}
+
+#location-controls {
+    position: absolute; /* Position relative to the map */
+    top: 260px; /* Adjust this to fit below the Draw controls */
+    left: 47px; /* Align it with the Leaflet Draw controls */
+    z-index: 1000; /* Ensure it appears above other elements */
+}
+
+#go-to-location {
+    padding: 5px;
+    border: none;
+    border-radius: 50%; /* Circular button */
+    background-color: white; /* Green background */
+    color: black;
+    cursor: pointer;
+    width: 35px; /* Set width */
+    height: 35px; /* Set height */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* Add shadow */
+}
+
+#go-to-location:hover {
+    background-color: #218838; /* Darker green on hover */
+}

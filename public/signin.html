@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Sign In</title>
+    <link rel="stylesheet" href="sigincss.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div class="background-image"></div> <!-- Background image section -->
+    <div class="container">
+        <div class="content">
+            <h1>Efficient Livestock Management</h1>
+            <h2>Using Geofencing Technology</h2>
+            <p class="hindi-quote">गाय का संरक्षण ही किसान की समृद्धि का आधार है।</p> <!-- Hindi quote for farmers -->
+            <form id="signin-form" class="form-container">
+                <input type="email" id="signin-email" placeholder="Email" required autocomplete="email">
+                <input type="password" id="signin-password" placeholder="Password" required autocomplete="current-password">
+                <button type="submit">Sign In</button>
+            </form>
+            <div id="error-message" style="color:red;"></div>
+            <p>Don't have an account? <a href="signup.html">Register here</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js';
+        import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2SzXAH6wcOcTHMkDIs8Z4vfSMlqHRScM",
+            authDomain: "asleshageofence.firebaseapp.com",
+            databaseURL: "https://asleshageofence-default-rtdb.firebaseio.com",
+            projectId: "asleshageofence",
+            storageBucket: "asleshageofence.appspot.com",
+            messagingSenderId: "263318295650",
+            appId: "1:263318295650:web:78b12b2cb5cdcccd3a2d3b",
+            measurementId: "G-GSYGC82DHW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const signinForm = document.getElementById('signin-form');
+        signinForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+
+            signInWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    document.body.style.backgroundColor = 'green'; // Change background color
+                    console.log('User signed in:', user);
+                    sessionStorage.setItem('userUid', user.uid);
+                    window.location.href = 'maps.html'; // Redirect to maps.html
+                })
+                .catch((error) => {
+                    const errorMessage = error.message;
+                    document.getElementById('error-message').innerText = errorMessage; // Display error
+                    // Optionally, check for specific error codes to give user feedback
+                    if (error.code === 'auth/user-not-found') {
+                        document.getElementById('error-message').innerText = "User not found. Please register.";
+                    }
+                });
+        });
+    </script>
+</body>
+</html>

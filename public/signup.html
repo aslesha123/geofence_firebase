@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Firebase Signup</title>
+    <link rel="stylesheet" href="sigincss.css"> <!-- Link to external CSS -->
+</head>
+<body>
+    <div class="background-image"></div> <!-- Background image section -->
+    <div class="container">
+        <div class="content">
+            <h1>Efficient Livestock Management</h1>
+            <h2>Using Geofencing Technology</h2>
+            <p class="hindi-quote">गाय का संरक्षण ही किसान की समृद्धि का आधार है।</p> <!-- Hindi quote for farmers -->
+            <form id="signup-form" class="form-container"> <!-- Updated form ID -->
+                <input type="email" id="signup-email" placeholder="Email" required autocomplete="email">
+                <input type="password" id="signup-password" placeholder="Password" required autocomplete="current-password">
+                <button type="submit">Sign Up</button> <!-- Changed button text to "Sign Up" -->
+            </form>
+            <div id="error-message" style="color:red;"></div>
+            <p>Already have an account? <a href="signin.html">Log In</a></p>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.1.0/firebase-app.js';
+        import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/9.1.0/firebase-auth.js';
+
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyA2SzXAH6wcOcTHMkDIs8Z4vfSMlqHRScM",
+            authDomain: "asleshageofence.firebaseapp.com",
+            databaseURL: "https://asleshageofence-default-rtdb.firebaseio.com",
+            projectId: "asleshageofence",
+            storageBucket: "asleshageofence.appspot.com",
+            messagingSenderId: "263318295650",
+            appId: "1:263318295650:web:78b12b2cb5cdcccd3a2d3b",
+            measurementId: "G-GSYGC82DHW"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+
+        const signupForm = document.getElementById('signup-form');
+        signupForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+
+            createUserWithEmailAndPassword(auth, email, password)
+                .then((userCredential) => {
+                    // Signed in
+                    const user = userCredential.user;
+                    document.body.style.backgroundColor = 'green'; // Change background color
+                    console.log('User signed up:', user);
+                })
+                .catch((error) => {
+                    const errorMessage = error.message;
+                    document.getElementById('error-message').innerText = errorMessage; // Display error
+                });
+        });
+    </script>
+</body>
+</html>
